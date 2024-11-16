@@ -29,7 +29,7 @@ VS Code (for frontend hosting, optional)
 
 # Usage
 Open the frontend in a browser.
-Type a question in the input box (e.g., "What are the symptoms of diabetes?").
+Type a question in the input box (e.g., "Symptoms of flu?").
 Receive a summarized, grammatically correct response from the chatbot.
 
 # Future Enhancements
