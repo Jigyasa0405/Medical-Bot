@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+    #chat-container {
+      width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #chat-display {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+    }
+    .chat-message.user {
+      text-align: right;
+    }
+    .chat-message.bot {
+      text-align: left;
+    }
+    #input-container {
+      display: flex;
+    }
+    #question {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    #send-btn {
+      margin-left: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #send-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h2>Medical Chatbot</h2>
+    <div id="chat-display"></div>
+    <div id="input-container">
+      <input type="text" id="question" placeholder="Type your question here..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question');
+    const sendBtn = document.getElementById('send-btn');
+
+    sendBtn.addEventListener('click', async () => {
+      const question = questionInput.value.trim();
+      if (!question) return;
+
+      // Display user's message
+      const userMessage = document.createElement('div');
+      userMessage.className = 'chat-message user';
+      userMessage.textContent = question;
+      chatDisplay.appendChild(userMessage);
+
+      questionInput.value = '';
+
+      // Call the FastAPI endpoint
+      try {
+        // Replace this URL with your ngrok or deployment URL
+        const apiURL = "https://2e0a-35-225-254-160.ngrok-free.app/predict"; // Change this to your public API URL
+        const response = await fetch(apiURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ question }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch response from API");
+        }
+
+        const data = await response.json();
+
+        // Display chatbot's response
+        const botMessage = document.createElement('div');
+        botMessage.className = 'chat-message bot';
+        botMessage.textContent = data.answer;
+        chatDisplay.appendChild(botMessage);
+
+        chatDisplay.scrollTop = chatDisplay.scrollHeight; // Auto-scroll to the latest message
+      } catch (error) {
+        console.error('Error:', error);
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'chat-message bot';
+        errorMessage.textContent = 'Sorry, there was an error processing your request.';
+        chatDisplay.appendChild(errorMessage);
+      }
+    });
+  </script>
+</body>
+</html>
